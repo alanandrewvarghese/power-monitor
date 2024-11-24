@@ -13,9 +13,22 @@ def init_routes(app):
     @app.route('/')
     def index():
 
+        timestamp_start = datetime.now(timezone.utc) - timedelta(hours=6)
+        timestamp_start = timestamp_start.astimezone(IST)
+        timestamp_end = datetime.now(timezone.utc)
+        timestamp_end = timestamp_end.astimezone(IST)
+        fmt_timestamp_start=timestamp_start.strftime('%Y-%m-%dT%H:%M')
+        fmt_timestamp_end=timestamp_end.strftime('%Y-%m-%dT%H:%M')
+        query = f"select * from measurements where timestamp > '{timestamp_start}' and timestamp < '{timestamp_end}' limit 86400;"
+        
+        default_times={
+            "start":fmt_timestamp_start,
+            "end":fmt_timestamp_end
+        }
+        
         try:
             cur = mysql.connection.cursor()
-            cur.execute('SELECT * FROM measurements')
+            cur.execute(query)
             chart_data = cur.fetchall()
         except Exception as e:
             print(e)
@@ -26,7 +39,7 @@ def init_routes(app):
         fig = px.line(df, x="timestamp", y="power", title="Power Usage Over Time")
         chart_html = fig.to_html(full_html=False)  # Convert Plotly chart to HTML
     
-        return render_template('index.html', chart=chart_html, df=df)
+        return render_template('index.html', chart=chart_html, df=df, times=default_times)
     
     @app.route("/update_graph",methods=["POST"])
     def update_graph():
@@ -57,4 +70,3 @@ def init_routes(app):
         chart_html = fig.to_html(full_html=False)  # Convert Plotly chart to HTML
     
         return render_template('index.html', chart=chart_html, df=df)
-    
