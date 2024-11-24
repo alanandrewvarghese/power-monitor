@@ -55,7 +55,7 @@ def init_routes(app):
         
         start, end = helpers.parse_timestamps(start, end, 24)  # Default last 6 hours
 
-        query = f"select * from hourSummary"
+        query = f"select * from hourSummary WHERE timestamp >= '{start}' AND timestamp <= '{end}' LIMIT 86400;"
         df = helpers.fetch_chart_data(query)
         
         chart_html = None
