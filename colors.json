@@ -1,0 +1,19 @@
+{
+    "primary": {
+      "light": "#777",
+      "DEFAULT": "#16161d",
+      "dark": "#111"
+    },
+    "secondary": {
+      "light": "#34d399",
+      "DEFAULT": "#ffffff",
+      "dark": "#065f46"
+    },
+    "accent": {
+       "hover": "#e0e0e0",
+       "DEFAULT": "#651FFF",
+       "light": "#4A148C66"
+    }
+    
+  }
+  

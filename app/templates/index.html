@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<meta http-equiv="refresh" content="5">-->
+    <title>PowerMonitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="">
+    <header class="mx-auto flex justify-center items-center text-secondary bg-primary text-5xl p-5">
+        <h1>PowerMonitor</h1>
+    </header>
+    <!--<nav class="container mx-auto w-full flex justify-center md:justify-end items-center gap-4 text-xl">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+    </nav> -->
+    <main>
+        <section id="home" class="container mx-auto p-1">
+            {{ chart|safe }}
+        </section>
+        <section class="overflow-x-auto mx-auto md:max-w-[80%] bg-secondary shadow-md rounded-sm p-1 mb-2">
+            <table class="min-w-full table-auto text-center">
+                <thead class="bg-primary text-secondary">
+                    <tr>
+                        <th class="px-4 py-4 ">Date</th>
+                        <th class="px-4 py-4 ">Power Usage (kWh)</th>
+                    </tr>
+                </thead>
+                <tbody class="text-primary">
+                    {% for row in df.itertuples() %}
+                    <tr class="border-t">
+                        <td class="px-4 py-2">{{ row.date }}</td>
+                        <td class="px-4 py-2">{{ row.power_usage }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer class="mx-auto flex justify-center align-center p-4 w-full text-secondary bg-primary">
+        <p>&copy; 2024 PowerMonitor</p>
+    </footer>
+</body>
+</html>

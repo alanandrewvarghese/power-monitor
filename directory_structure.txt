@@ -1,0 +1,24 @@
+- .gitignore
+- app
+  - routes.py
+  - static
+    - css
+      - style.css
+      - tailwind.css
+    - images
+    - js
+      - script.js
+  - templates
+    - index.html
+  - __init__.py
+- colors.json
+- config.py
+- ds.js
+- ds.txt
+- manage.py
+- package-lock.json
+- package.json
+- README.md
+- requirements.txt
+- tailwind.config.js
+- vercel.json
