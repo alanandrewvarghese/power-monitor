@@ -4,8 +4,7 @@ from datetime import datetime, timezone, timedelta
 import pandas as pd
 import pytz
 
-def fetch_chart_data(start_time, end_time):
-    query = f"SELECT * FROM measurements WHERE timestamp > '{start_time}' AND timestamp < '{end_time}' LIMIT 86400;"
+def fetch_chart_data(query):
     try:
         cur = mysql.connection.cursor()
         cur.execute(query)
