@@ -16,14 +16,17 @@ def fetch_chart_data(query):
         print(f"Database error: {e}")
         return pd.DataFrame()
 
-def parse_timestamps(start, end, default_hours=6):
+def parse_timestamps(start, end, default_hours=6, tfo=False):
     IST = pytz.timezone('Asia/Kolkata')
     now = datetime.now(timezone.utc)
 
     if start:
         start = datetime.strptime(start, '%Y-%m-%dT%H:%M').astimezone(IST)
     else:
-        start = (now - timedelta(hours=default_hours)).astimezone(IST)
+        if tfo:
+            start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        else:
+            start = (now - timedelta(hours=default_hours)).astimezone(IST)
 
     if end:
         end = datetime.strptime(end, '%Y-%m-%dT%H:%M').astimezone(IST)

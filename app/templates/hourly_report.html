@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--<meta http-equiv="refresh" content="5">-->
     <title>PowerMonitor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="">
-    <header class="mx-auto flex justify-center items-center text-secondary bg-primary text-5xl p-5">
+    <header class="mx-auto flex flex-col justify-center items-center text-secondary bg-primary text-5xl p-8">
         <h1>PowerMonitor</h1>
+        <span class="bg-secondary border-secondary w-full max-h-[2px] my-2">
+        <nav class="container mx-auto w-full flex justify-center md:justify-end items-center gap-4 pt-1 text-xl">
+            <a class=" hover:text-accent-light" href="/">Home</a>
+            <a class="text-accent-light" href="/hourly_reports">Hourly-Reports</a>
+        </nav>
     </header>
-    <main class="min-h-[calc(100vh-144px)]">
+    <main class="min-h-[calc(100vh-186px)]">
         <section id="home" class="container mx-auto p-1">
             <form action="/hourly_reports" method="post" class="flex flex-col items-center justify-center md:flex-row space-y-4 md:space-x-4 md:space-y-0 p-4 bg-gray-100 rounded-lg shadow-md">
                 <label for="timestamp_start">Start Time:</label>
@@ -38,13 +42,16 @@
                     class="w-full px-4 py-2 text-white bg-primary rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none cursor-pointer"
                 >
             </form>
-            
-            {{ chart.power|safe }}
-            {{ chart.voltage|safe }}
-            {{ chart.current|safe }}
-            {{ chart.power_factor|safe }}
-            {{ chart.energy_consumption|safe }}
-            {{ chart.frequency|safe }}
+            {% if isEmpty %}
+                <p class='text-center text-red-500 p-8'>No data available for the selected time range.</p>
+            {% else %}
+                {{ chart.energy_consumption|safe }}
+                {{ chart.power|safe }}
+                {{ chart.voltage|safe }}
+                {{ chart.current|safe }}
+                {{ chart.power_factor|safe }}
+                {{ chart.frequency|safe }}
+            {% endif %}
         </section>
     </main>
     <footer class="mx-auto flex justify-center align-center p-4 w-full text-secondary bg-primary">

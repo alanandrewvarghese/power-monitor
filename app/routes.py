@@ -19,9 +19,10 @@ def init_routes(app):
         df = helpers.fetch_chart_data(query)
         
         chart_html = None
+        isEmpty = False
 
         if df.empty:
-            chart_html = "<p class='text-center text-red-500 p-8'>No data available for the selected time range.</p>"
+            isEmpty = True
         else:
             fig = px.line(df, x="timestamp", y="power", title="Power Over Time")
             power_chart_html = fig.to_html(full_html=False)
@@ -43,7 +44,7 @@ def init_routes(app):
             }
 
         # Render the template with the chart and timestamps
-        return render_template('index.html', chart=chart_html, df=df, times={"start": start, "end": end})
+        return render_template('index.html', chart=chart_html, isEmpty=isEmpty, times={"start": start, "end": end})
     
     @app.route('/hourly_reports', methods=["GET", "POST"])
     def hourly_reports():
@@ -53,15 +54,16 @@ def init_routes(app):
         else:
             start,end = None, None
         
-        start, end = helpers.parse_timestamps(start, end, 24)  # Default last 6 hours
+        start, end = helpers.parse_timestamps(start, end, 24, True)
 
         query = f"select * from hourSummary WHERE timestamp >= '{start}' AND timestamp <= '{end}' LIMIT 86400;"
         df = helpers.fetch_chart_data(query)
         
         chart_html = None
+        isEmpty = False
 
         if df.empty:
-            chart_html = "<p class='text-center text-red-500 p-8'>No data available for the selected time range.</p>"
+            isEmpty = True
         else:
             fig = px.bar(df, x='timestamp', y='avgVoltage', title="Voltage (Hourly)")
             voltage_chart_html = fig.to_html(full_html=False)
@@ -91,5 +93,5 @@ def init_routes(app):
             }
 
         # Render the template with the chart and timestamps
-        return render_template('hourly_report.html', chart=chart_html, times={"start": start, "end": end})
+        return render_template('hourly_report.html', chart=chart_html, isEmpty=isEmpty, times={"start": start, "end": end})
 

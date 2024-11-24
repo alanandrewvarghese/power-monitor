@@ -597,6 +597,11 @@ video {
   margin-right: auto;
 }
 
+.my-2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .mb-2 {
   margin-bottom: 0.5rem;
 }
@@ -609,8 +614,16 @@ video {
   display: table;
 }
 
+.max-h-\[2px\] {
+  max-height: 2px;
+}
+
 .min-h-\[calc\(100vh-144px\)\] {
   min-height: calc(100vh - 144px);
+}
+
+.min-h-\[calc\(100vh-186px\)\] {
+  min-height: calc(100vh - 186px);
 }
 
 .w-full {
@@ -680,6 +693,11 @@ video {
   border-color: rgb(209 213 219 / var(--tw-border-opacity, 1));
 }
 
+.border-secondary {
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
+}
+
 .bg-gray-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1));
@@ -707,6 +725,10 @@ video {
   padding: 1.25rem;
 }
 
+.p-8 {
+  padding: 2rem;
+}
+
 .px-4 {
   padding-left: 1rem;
   padding-right: 1rem;
@@ -722,6 +744,10 @@ video {
   padding-bottom: 1rem;
 }
 
+.pt-1 {
+  padding-top: 0.25rem;
+}
+
 .text-center {
   text-align: center;
 }
@@ -734,6 +760,11 @@ video {
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.text-accent {
+  --tw-text-opacity: 1;
+  color: rgb(101 31 255 / var(--tw-text-opacity, 1));
 }
 
 .text-primary {
@@ -751,6 +782,16 @@ video {
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
+.text-accent-light {
+  --tw-text-opacity: 1;
+  color: rgb(99 110 250 / var(--tw-text-opacity, 1));
+}
+
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity, 1));
+}
+
 .shadow-md {
   --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
@@ -760,6 +801,16 @@ video {
 .hover\:bg-blue-600:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1));
+}
+
+.hover\:text-accent-hover:hover {
+  --tw-text-opacity: 1;
+  color: rgb(224 224 224 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-accent-light:hover {
+  --tw-text-opacity: 1;
+  color: rgb(99 110 250 / var(--tw-text-opacity, 1));
 }
 
 .focus\:outline-none:focus {
@@ -776,6 +827,11 @@ video {
 .focus\:ring-blue-400:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(96 165 250 / var(--tw-ring-opacity, 1));
+}
+
+.active\:bg-black:active {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity, 1));
 }
 
 @media (min-width: 768px) {
