@@ -46,13 +46,22 @@ def init_routes(app):
         timestamp_start = request.form.get("timestamp_start")
         timestamp_end = request.form.get("timestamp_end")
 
-        if not timestamp_start:
+        if timestamp_start:
+            timestamp_start = datetime.strptime(timestamp_start, '%Y-%m-%dT%H:%M')
+        else:
             timestamp_start = datetime.now(timezone.utc) - timedelta(hours=6)
-            timestamp_start = timestamp_start.astimezone(IST)
 
-        if not timestamp_end:
-            timestamp_end = datetime.now(timezone.utc)  # Get the current time in UTC and make it timezone-aware
-            timestamp_end = timestamp_end.astimezone(IST)
+        if timestamp_end:
+            timestamp_end = datetime.strptime(timestamp_end, '%Y-%m-%dT%H:%M')
+        else:
+            timestamp_end = datetime.now(timezone.utc)
+
+        fmt_timestamp_start=timestamp_start.strftime('%Y-%m-%dT%H:%M')
+        fmt_timestamp_end=timestamp_end.strftime('%Y-%m-%dT%H:%M')
+        default_times={
+            "start":fmt_timestamp_start,
+            "end":fmt_timestamp_end
+        }
 
         query = f"select * from measurements where timestamp > '{timestamp_start}' and timestamp < '{timestamp_end}' limit 86400;"
 
@@ -69,4 +78,4 @@ def init_routes(app):
         fig = px.line(df, x="timestamp", y="power", title="Power Usage Over Time")
         chart_html = fig.to_html(full_html=False)  # Convert Plotly chart to HTML
     
-        return render_template('index.html', chart=chart_html, df=df)
+        return render_template('index.html', chart=chart_html, df=df, times=default_times)
