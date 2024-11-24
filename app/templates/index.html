@@ -17,11 +17,34 @@
         <a href="#services">Services</a>
         <a href="#contact">Contact</a>
     </nav> -->
-    <main>
+    <main class="min-h-[calc(100vh-144px)]">
         <section id="home" class="container mx-auto p-1">
             {{ chart|safe }}
+            <form action="/update_graph" method="post" class="flex flex-col items-center justify-center md:flex-row space-y-4 md:space-x-4 md:space-y-0 p-4 bg-gray-100 rounded-lg shadow-md">
+                <label for="timestamp_start">Start Time:</label>
+                <input 
+                    type="datetime-local" 
+                    name="timestamp_start" 
+                    id="timestamp_start" 
+                    placeholder="Start Time" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                >
+                <label for="timestamp_start">End Time:</label>
+                <input 
+                    type="datetime-local" 
+                    name="timestamp_end" 
+                    id="timestamp_end" 
+                    placeholder="End Time" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                >
+                <input 
+                    type="submit" 
+                    value="Update Graph" 
+                    class="w-full px-4 py-2 text-white bg-primary rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none cursor-pointer"
+                >
+            </form>
         </section>
-        <section class="overflow-x-auto mx-auto md:max-w-[80%] bg-secondary shadow-md rounded-sm p-1 mb-2">
+        <!-- <section class="overflow-x-auto mx-auto md:max-w-[80%] bg-secondary shadow-md rounded-sm p-1 mb-2">
             <table class="min-w-full table-auto text-center">
                 <thead class="bg-primary text-secondary">
                     <tr>
@@ -32,13 +55,13 @@
                 <tbody class="text-primary">
                     {% for row in df.itertuples() %}
                     <tr class="border-t">
-                        <td class="px-4 py-2">{{ row.date }}</td>
-                        <td class="px-4 py-2">{{ row.power_usage }}</td>
+                        <td class="px-4 py-2">{{ row.timestamp }}</td>
+                        <td class="px-4 py-2">{{ row.power }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </section>
+        </section> -->
     </main>
     <footer class="mx-auto flex justify-center align-center p-4 w-full text-secondary bg-primary">
         <p>&copy; 2024 PowerMonitor</p>
