@@ -1,81 +1,51 @@
 from flask import render_template, current_app, request
 from app import create_app  # Import the create_app function
-from app import mysql
-from datetime import datetime, timezone, timedelta
-import pandas as pd
 import plotly.express as px
-import pytz
+from . import helpers
+
 
 def init_routes(app):
-
-    IST = pytz.timezone('Asia/Kolkata')
-
-    @app.route('/')
+    @app.route('/', methods=["GET", "POST"])
     def index():
-
-        timestamp_start = datetime.now(timezone.utc) - timedelta(hours=6)
-        timestamp_start = timestamp_start.astimezone(IST)
-        timestamp_end = datetime.now(timezone.utc)
-        timestamp_end = timestamp_end.astimezone(IST)
-        fmt_timestamp_start=timestamp_start.strftime('%Y-%m-%dT%H:%M')
-        fmt_timestamp_end=timestamp_end.strftime('%Y-%m-%dT%H:%M')
-        query = f"select * from measurements where timestamp > '{timestamp_start}' and timestamp < '{timestamp_end}' limit 86400;"
-        
-        default_times={
-            "start":fmt_timestamp_start,
-            "end":fmt_timestamp_end
-        }
-        
-        try:
-            cur = mysql.connection.cursor()
-            cur.execute(query)
-            chart_data = cur.fetchall()
-        except Exception as e:
-            print(e)
-
-        columns = [desc[0] for desc in cur.description]
-        df = pd.DataFrame(chart_data, columns=columns)
-        
-        fig = px.line(df, x="timestamp", y="power", title="Power Usage Over Time")
-        chart_html = fig.to_html(full_html=False)  # Convert Plotly chart to HTML
-    
-        return render_template('index.html', chart=chart_html, df=df, times=default_times)
-    
-    @app.route("/update_graph",methods=["POST"])
-    def update_graph():
-        timestamp_start = request.form.get("timestamp_start")
-        timestamp_end = request.form.get("timestamp_end")
-
-        if timestamp_start:
-            timestamp_start = datetime.strptime(timestamp_start, '%Y-%m-%dT%H:%M')
+        if request.method == "POST":
+            start = request.form.get("timestamp_start")
+            end = request.form.get("timestamp_end")
         else:
-            timestamp_start = datetime.now(timezone.utc) - timedelta(hours=6)
+            start,end = None, None
+        
+        start, end = helpers.parse_timestamps(start, end)  # Default last 6 hours
 
-        if timestamp_end:
-            timestamp_end = datetime.strptime(timestamp_end, '%Y-%m-%dT%H:%M')
+        df = helpers.fetch_chart_data(start, end)
+        
+        if df.empty:
+            chart_html = "<p class='text-center text-red-500 p-8'>No data available for the selected time range.</p>"
         else:
-            timestamp_end = datetime.now(timezone.utc)
+            fig = px.line(df, x="timestamp", y="power", title="Power Over Time")
+            power_chart_html = fig.to_html(full_html=False)
 
-        fmt_timestamp_start=timestamp_start.strftime('%Y-%m-%dT%H:%M')
-        fmt_timestamp_end=timestamp_end.strftime('%Y-%m-%dT%H:%M')
-        default_times={
-            "start":fmt_timestamp_start,
-            "end":fmt_timestamp_end
+            fig = px.line(df, x="timestamp", y="voltage", title="Voltage Over Time")
+            voltage_chart_html = fig.to_html(full_html=False)
+            
+            fig = px.line(df, x="timestamp", y="current", title="Current Over Time")
+            current_chart_html = fig.to_html(full_html=False)
+            
+            fig = px.line(df, x="timestamp", y="energy", title="Energy Over Time")
+            energy_chart_html = fig.to_html(full_html=False)
+            
+            fig = px.line(df, x="timestamp", y="frequency", title="Frequency Over Time")
+            frequency_chart_html = fig.to_html(full_html=False)
+            
+            fig = px.line(df, x="timestamp", y="power_factor", title="Power Factor Over Time")
+            power_factor_chart_html = fig.to_html(full_html=False)
+
+        chart_html = {
+            "power":power_chart_html,
+            "voltage":voltage_chart_html,
+            "current":current_chart_html,
+            "energy":energy_chart_html,
+            "frequency":frequency_chart_html,
+            "power_factor":power_factor_chart_html
         }
 
-        query = f"select * from measurements where timestamp > '{timestamp_start}' and timestamp < '{timestamp_end}' limit 86400;"
-
-        try:
-            cur = mysql.connection.cursor()
-            cur.execute(query)
-            chart_data = cur.fetchall()
-        except Exception as e:
-            print(e)
-
-        columns = [desc[0] for desc in cur.description]
-        df = pd.DataFrame(chart_data, columns=columns)
-        
-        fig = px.line(df, x="timestamp", y="power", title="Power Usage Over Time")
-        chart_html = fig.to_html(full_html=False)  # Convert Plotly chart to HTML
-    
-        return render_template('index.html', chart=chart_html, df=df, times=default_times)
+        # Render the template with the chart and timestamps
+        return render_template('index.html', chart=chart_html, df=df, times={"start": start, "end": end})
