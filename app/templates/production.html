@@ -3,14 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hourly Reports - PowerMonitor</title>
-    <!-- Updated Title -->
+    <title>Production Reports - PowerMonitor</title>
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
     />
     <style>
-      /* Basic Reset and Variables - Reused from previous examples */
+      /* Basic Reset and Variables */
       :root {
         --color-primary: #007bff; /* A modern blue */
         --color-secondary: #6c757d; /* Muted grey */
@@ -56,14 +55,14 @@
         flex-direction: column;
       }
 
-      /* Layout Containers - Reused */
+      /* Layout Containers */
       .container {
         max-width: var(--max-width-content);
         margin: 0 auto; /* Center the container */
         padding: 0 var(--space-md); /* Add padding on sides */
       }
 
-      /* Header - Reused/Adapted */
+      /* Header */
       .site-header {
         background-color: var(--color-surface);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -85,18 +84,11 @@
         margin: 0; /* Reset margin */
       }
 
-      /* Removed the empty span */
-
       .site-nav ul {
         list-style: none;
         display: flex;
         gap: var(--space-md); /* Space between nav items */
         flex-wrap: wrap; /* Allow nav items to wrap */
-        padding: 0; /* Ensure no default ul padding */
-      }
-
-      .site-nav li {
-        display: inline-block; /* Display list items inline */
       }
 
       .site-nav a {
@@ -112,29 +104,26 @@
         outline: none; /* Remove default focus outline */
       }
 
-      /* Main Content - Reused */
+      /* Main Content */
       .main-content {
         flex-grow: 1; /* Allow main content to take up available space */
         padding: var(--space-xl) 0;
       }
 
-      /* Section Styling - Reused/Generalized */
-      .data-section {
-        /* Using the general name */
+      /* Section Styling */
+      .report-section {
         margin-bottom: var(--space-xl);
       }
 
       .section-title {
-        /* Reused */
         font-size: var(--font-size-xxl);
         font-weight: 700;
         margin-bottom: var(--space-lg);
         text-align: center;
       }
 
-      /* Form Styling - Reused/Adapted */
-      .filter-form {
-        /* Using the same class name */
+      /* Form Styling */
+      .report-form {
         background-color: var(--color-surface);
         padding: var(--space-lg);
         border-radius: var(--border-radius);
@@ -146,7 +135,6 @@
         align-items: flex-end; /* Align items to the bottom */
       }
 
-      /* Added form-group wrappers as in the previous examples */
       .form-group {
         display: flex;
         flex-direction: column; /* Stack label and input */
@@ -188,14 +176,12 @@
         outline: none;
       }
 
-      /* Chart and Empty State Display - Reused/Adapted */
-      .data-results {
-        /* Using the same class name */
+      /* Chart and Empty State Display */
+      .report-results {
         margin-top: var(--space-xl);
       }
 
       .empty-state {
-        /* Reused */
         background-color: #fff3cd; /* Light yellow background */
         color: #856404; /* Dark yellow text */
         border: 1px solid #ffeeba;
@@ -205,7 +191,6 @@
       }
 
       .chart-grid {
-        /* Reused */
         display: grid;
         grid-template-columns: repeat(
           auto-fit,
@@ -215,7 +200,6 @@
       }
 
       .chart-container {
-        /* Reused */
         background-color: var(--color-surface);
         padding: var(--space-md);
         border-radius: var(--border-radius);
@@ -223,17 +207,16 @@
         display: flex; /* Use flex to center chart content */
         justify-content: center;
         align-items: center;
-        min-height: 200px; /* Example min-height for consistency */
       }
 
-      /* Ensure injected chart content scales - Reused */
+      /* Ensure injected chart content scales */
       .chart-container > * {
         max-width: 100%;
         height: auto; /* Maintain aspect ratio */
         display: block; /* Remove extra space below if it's an SVG/img */
       }
 
-      /* Footer - Reused */
+      /* Footer */
       .site-footer {
         background-color: var(--color-text-dark);
         color: var(--color-secondary);
@@ -246,7 +229,7 @@
         /* No special styling needed, container centers it */
       }
 
-      /* Responsive Adjustments - Reused/Adapted */
+      /* Responsive Adjustments */
       @media (max-width: 768px) {
         .header-content {
           flex-direction: column; /* Stack logo/title and nav */
@@ -262,8 +245,7 @@
           padding: var(--space-xs) 0; /* Add some vertical padding for touch targets */
         }
 
-        .filter-form {
-          /* Target the new class name */
+        .report-form {
           flex-direction: column; /* Stack form groups vertically */
           align-items: stretch; /* Make them fill the width */
         }
@@ -295,8 +277,7 @@
 
       @media (min-width: 769px) {
         /* Adjust form layout for larger screens */
-        .filter-form {
-          /* Target the new class name */
+        .report-form {
           /* Flex properties already handle this well */
           gap: var(--space-lg); /* Increase gap on larger screens */
         }
@@ -311,7 +292,7 @@
     <header class="site-header">
       <div class="container header-content">
         <h1 class="site-title">PowerMonitor</h1>
-        <!-- Removed the empty span -->
+        <!-- Potential space for logo/brand element if needed -->
         <nav class="site-nav">
           <ul>
             <li><a href="/">Consumption</a></li>
@@ -324,15 +305,11 @@
 
     <main class="main-content">
       <div class="container">
-        <section id="hourly_reports" class="data-section">
-          <!-- Changed section ID for clarity -->
-          <h2 class="section-title">Consumption: Hourly Reports</h2>
-          <!-- Added a relevant title -->
+        <section id="production" class="report-section">
+          <h2 class="section-title">Production Reports</h2>
 
-          <form class="filter-form" action="/hourly_reports" method="post">
-            <!-- Using the same class name -->
+          <form class="report-form" action="/production" method="post">
             <div class="form-group">
-              <!-- Added wrapper div -->
               <label for="timestamp_start">Start Time:</label>
               <input
                 type="datetime-local"
@@ -343,7 +320,6 @@
               />
             </div>
             <div class="form-group">
-              <!-- Added wrapper div -->
               <label for="timestamp_end">End Time:</label>
               <input
                 type="datetime-local"
@@ -354,56 +330,25 @@
               />
             </div>
             <div class="form-group">
-              <!-- Added wrapper div for button -->
-              <!-- The button is now wrapped to fit the form-group flex layout -->
-              <input
-                type="submit"
-                value="Update Report"
-                Changed
-                button
-                text
-                for
-                clarity
-                --
-              />
+              <input type="submit" value="Update Report" />
             </div>
           </form>
 
-          <div class="data-results">
-            <!-- Using the same class name -->
+          <div class="report-results">
             {% if isEmpty %}
             <div class="empty-state">
-              <!-- Added class for styling -->
-              <p>No data available for the selected time range.</p>
+              <p>No production data available for the selected time range.</p>
             </div>
             {% else %}
             <div class="chart-grid">
-              <!-- Added grid container -->
+              <div class="chart-container">{{ chart.daily_energy|safe }}</div>
               <div class="chart-container">
-                <!-- Added wrapper for each chart -->
-                {{ chart.energy_consumption|safe }}
+                {{ chart.cumulative_energy|safe }}
               </div>
-              <div class="chart-container">
-                <!-- Added wrapper for each chart -->
-                {{ chart.power|safe }}
-              </div>
-              <div class="chart-container">
-                <!-- Added wrapper for each chart -->
-                {{ chart.voltage|safe }}
-              </div>
-              <div class="chart-container">
-                <!-- Added wrapper for each chart -->
-                {{ chart.current|safe }}
-              </div>
-              <div class="chart-container">
-                <!-- Added wrapper for each chart -->
-                {{ chart.power_factor|safe }}
-              </div>
-              <div class="chart-container">
-                <!-- Added wrapper for each chart -->
-                {{ chart.frequency|safe }}
-              </div>
-              <!-- Add more chart-container divs if you have more charts -->
+              <div class="chart-container">{{ chart.avg_power|safe }}</div>
+              <div class="chart-container">{{ chart.max_power|safe }}</div>
+              <div class="chart-container">{{ chart.avg_voltage|safe }}</div>
+              <!-- If you have more charts, add more chart-container divs here -->
             </div>
             {% endif %}
           </div>
@@ -412,10 +357,8 @@
     </main>
 
     <footer class="site-footer">
-      <!-- Added class -->
       <div class="container footer-content">
-        <!-- Added container and content div -->
-        <p>© 2024 PowerMonitor</p>
+        <p>© 2025 PowerMonitor</p>
       </div>
     </footer>
   </body>

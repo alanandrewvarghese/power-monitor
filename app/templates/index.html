@@ -1,59 +1,398 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PowerMonitor</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body class="">
-    <header class="mx-auto flex flex-col justify-center items-center text-secondary bg-primary text-5xl p-8">
-        <h1>PowerMonitor</h1>
-        <span class="bg-secondary border-secondary w-full max-h-[2px] my-2">
-        <nav class="container mx-auto w-full flex justify-center md:justify-end items-center gap-4 pt-1 text-xl">
-            <a class="text-accent-light" href="/">Home</a>
-            <a class="hover:text-accent-light" href="/hourly_reports">Hourly-Reports</a>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+    />
+    <style>
+      /* Basic Reset and Variables - Reused from Production Report */
+      :root {
+        --color-primary: #007bff; /* A modern blue */
+        --color-secondary: #6c757d; /* Muted grey */
+        --color-text-dark: #343a40; /* Dark text */
+        --color-text-light: #ffffff; /* Light text */
+        --color-background: #f8f9fa; /* Light background */
+        --color-surface: #ffffff; /* Card/container background */
+        --color-border: #dee2e6; /* Light border */
+        --color-success: #28a745; /* Green for positive states */
+        --color-danger: #dc3545; /* Red for negative states */
+
+        --space-unit: 1rem; /* Base spacing unit (16px) */
+        --space-xs: calc(0.25 * var(--space-unit)); /* 4px */
+        --space-sm: calc(0.5 * var(--space-unit)); /* 8px */
+        --space-md: calc(1 * var(--space-unit)); /* 16px */
+        --space-lg: calc(1.5 * var(--space-unit)); /* 24px */
+        --space-xl: calc(2 * var(--space-unit)); /* 32px */
+
+        --border-radius: 0.25rem; /* Standard border radius */
+        --max-width-content: 1200px; /* Max width for main content */
+
+        --font-family-base: "Inter", sans-serif; /* Modern sans-serif font */
+        --font-size-base: 1rem; /* 16px */
+        --font-size-lg: 1.25rem; /* 20px */
+        --font-size-xl: 1.5rem; /* 24px */
+        --font-size-xxl: 2rem; /* 32px */
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-family-base);
+        font-size: var(--font-size-base);
+        line-height: 1.6;
+        color: var(--color-text-dark);
+        background-color: var(--color-background);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Layout Containers - Reused */
+      .container {
+        max-width: var(--max-width-content);
+        margin: 0 auto; /* Center the container */
+        padding: 0 var(--space-md); /* Add padding on sides */
+      }
+
+      /* Header - Reused/Adapted */
+      .site-header {
+        background-color: var(--color-surface);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        padding: var(--space-sm) 0; /* Adjust padding */
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+        gap: var(--space-md); /* Space between logo/title and nav */
+      }
+
+      .site-title {
+        font-size: var(--font-size-xl);
+        font-weight: 700;
+        color: var(--color-primary);
+        margin: 0; /* Reset margin */
+      }
+
+      /* Removed the empty span */
+
+      .site-nav ul {
+        list-style: none;
+        display: flex;
+        gap: var(--space-md); /* Space between nav items */
+        flex-wrap: wrap; /* Allow nav items to wrap */
+      }
+
+      .site-nav a {
+        text-decoration: none;
+        color: var(--color-text-dark);
+        font-weight: 600;
+        transition: color 0.2s ease-in-out;
+      }
+
+      .site-nav a:hover,
+      .site-nav a:focus {
+        color: var(--color-primary);
+        outline: none; /* Remove default focus outline */
+      }
+
+      /* Main Content - Reused */
+      .main-content {
+        flex-grow: 1; /* Allow main content to take up available space */
+        padding: var(--space-xl) 0;
+      }
+
+      /* Section Styling - Reused/Generalized */
+      .data-section {
+        /* Using a slightly more general name */
+        margin-bottom: var(--space-xl);
+      }
+
+      .section-title {
+        /* Reused */
+        font-size: var(--font-size-xxl);
+        font-weight: 700;
+        margin-bottom: var(--space-lg);
+        text-align: center;
+      }
+
+      /* Form Styling - Reused/Adapted */
+      .filter-form {
+        /* Changed class name from report-form to filter-form */
+        background-color: var(--color-surface);
+        padding: var(--space-lg);
+        border-radius: var(--border-radius);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        margin-bottom: var(--space-xl);
+        display: flex; /* Use flexbox for layout */
+        flex-wrap: wrap; /* Allow form items to wrap */
+        gap: var(--space-md); /* Space between form groups */
+        align-items: flex-end; /* Align items to the bottom */
+      }
+
+      /* Added form-group wrappers as in the first example */
+      .form-group {
+        display: flex;
+        flex-direction: column; /* Stack label and input */
+        min-width: 200px; /* Ensure some minimum width for inputs */
+        flex: 1; /* Allow form groups to grow */
+      }
+
+      .form-group label {
+        display: block; /* Ensure label is on its own line */
+        margin-bottom: var(--space-xs); /* Space between label and input */
+        font-weight: 600;
+        color: var(--color-secondary);
+      }
+
+      .form-group input[type="datetime-local"],
+      .form-group input[type="submit"] {
+        width: 100%; /* Make inputs take full width of their container */
+        padding: var(--space-sm) var(--space-md);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius);
+        font-size: var(--font-size-base);
+      }
+
+      .form-group input[type="submit"] {
+        background-color: var(--color-primary);
+        color: var(--color-text-light);
+        font-weight: 600;
+        cursor: pointer;
+        border-color: var(--color-primary);
+        transition: background-color 0.2s ease-in-out,
+          border-color 0.2s ease-in-out;
+        align-self: flex-end; /* Align button to the bottom if inputs are different heights */
+      }
+
+      .form-group input[type="submit"]:hover,
+      .form-group input[type="submit"]:focus {
+        background-color: #0056b3; /* Darker blue on hover */
+        border-color: #0056b3;
+        outline: none;
+      }
+
+      /* Chart and Empty State Display - Reused/Adapted */
+      .data-results {
+        /* Changed class name from report-results */
+        margin-top: var(--space-xl);
+      }
+
+      .empty-state {
+        /* Reused */
+        background-color: #fff3cd; /* Light yellow background */
+        color: #856404; /* Dark yellow text */
+        border: 1px solid #ffeeba;
+        padding: var(--space-md);
+        border-radius: var(--border-radius);
+        text-align: center;
+      }
+
+      .chart-grid {
+        /* Reused */
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(300px, 1fr)
+        ); /* Responsive grid columns */
+        gap: var(--space-lg); /* Space between grid items */
+      }
+
+      .chart-container {
+        /* Reused */
+        background-color: var(--color-surface);
+        padding: var(--space-md);
+        border-radius: var(--border-radius);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        display: flex; /* Use flex to center chart content */
+        justify-content: center;
+        align-items: center;
+        /* Add min-height if needed for consistent card size, but let content dictate height often works better */
+        min-height: 200px; /* Example min-height */
+      }
+
+      /* Ensure injected chart content scales - Reused */
+      .chart-container > * {
+        max-width: 100%;
+        height: auto; /* Maintain aspect ratio */
+        display: block; /* Remove extra space below if it's an SVG/img */
+      }
+
+      /* Footer - Reused */
+      .site-footer {
+        background-color: var(--color-text-dark);
+        color: var(--color-secondary);
+        padding: var(--space-md) 0;
+        text-align: center;
+        margin-top: var(--space-xl); /* Space above footer */
+      }
+
+      .footer-content {
+        /* No special styling needed, container centers it */
+      }
+
+      /* Responsive Adjustments - Reused/Adapted */
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column; /* Stack logo/title and nav */
+          align-items: flex-start;
+        }
+
+        .site-nav ul {
+          flex-direction: column; /* Stack nav items */
+          gap: var(--space-sm);
+        }
+
+        .site-nav a {
+          padding: var(--space-xs) 0; /* Add some vertical padding for touch targets */
+        }
+
+        .filter-form {
+          /* Target the new class name */
+          flex-direction: column; /* Stack form groups vertically */
+          align-items: stretch; /* Make them fill the width */
+        }
+
+        .form-group {
+          min-width: 100%; /* Ensure form groups take full width */
+        }
+
+        .form-group input[type="submit"] {
+          align-self: stretch; /* Make button full width too */
+        }
+
+        .chart-grid {
+          grid-template-columns: 1fr; /* Single column on small screens */
+        }
+
+        .main-content {
+          padding: var(--space-lg) 0; /* Reduce padding on smaller screens */
+        }
+
+        .container {
+          padding: 0 var(--space-sm); /* Reduce side padding */
+        }
+
+        .site-title {
+          font-size: var(--font-size-xl); /* Slightly smaller title */
+        }
+      }
+
+      @media (min-width: 769px) {
+        /* Adjust form layout for larger screens */
+        .filter-form {
+          /* Target the new class name */
+          /* Flex properties already handle this well */
+          gap: var(--space-lg); /* Increase gap on larger screens */
+        }
+        .form-group {
+          flex: 1; /* Let inputs share space */
+        }
+        /* Adjust specific input widths if needed, but flex: 1 often works well */
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-content">
+        <h1 class="site-title">PowerMonitor</h1>
+        <!-- Removed the empty span -->
+        <nav class="site-nav">
+          <ul>
+            <li><a href="/">Consumption</a></li>
+            <li><a href="/hourly_reports">ConsumptionHr</a></li>
+            <li><a href="/production">Production</a></li>
+          </ul>
         </nav>
+      </div>
     </header>
-    <main class="min-h-[calc(100vh-186px)]">
-        <section id="home" class="container mx-auto p-1">
-            <form action="/" method="post" class="flex flex-col items-center justify-center md:flex-row space-y-4 md:space-x-4 md:space-y-0 p-4 bg-gray-100 rounded-lg shadow-md">
-                <label for="timestamp_start">Start Time:</label>
-                <input 
-                    type="datetime-local" 
-                    name="timestamp_start" 
-                    id="timestamp_start" 
-                    placeholder="Start Time"
-                    value="{{times['start']}}"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                >
-                <label for="timestamp_start">End Time:</label>
-                <input 
-                    type="datetime-local" 
-                    name="timestamp_end" 
-                    id="timestamp_end" 
-                    placeholder="End Time" 
-                    value="{{times['end']}}"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                >
-                <input 
-                    type="submit" 
-                    value="Update Graph" 
-                    class="w-full px-4 py-2 text-white bg-primary rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none cursor-pointer"
-                >
-            </form>
+
+    <main class="main-content">
+      <div class="container">
+        <section id="home" class="data-section">
+          <h2 class="section-title">Consumption Reports</h2>
+          <!-- Added a relevant title -->
+
+          <form class="filter-form" action="/" method="post">
+            <!-- Changed class name -->
+            <div class="form-group">
+              <!-- Added wrapper div -->
+              <label for="timestamp_start">Start Time:</label>
+              <input
+                type="datetime-local"
+                name="timestamp_start"
+                id="timestamp_start"
+                placeholder="Start Time"
+                value="{{times['start']}}"
+              />
+            </div>
+            <div class="form-group">
+              <!-- Added wrapper div -->
+              <label for="timestamp_end">End Time:</label>
+              <input
+                type="datetime-local"
+                name="timestamp_end"
+                id="timestamp_end"
+                placeholder="End Time"
+                value="{{times['end']}}"
+              />
+            </div>
+            <div class="form-group">
+              <!-- Added wrapper div for button -->
+              <!-- The button is now wrapped to fit the form-group flex layout -->
+              <input type="submit" value="Update Graph" />
+            </div>
+          </form>
+
+          <div class="data-results">
+            <!-- Changed class name -->
             {% if isEmpty %}
-                <p class='text-center text-red-500 p-8'>No data available for the selected time range.</p>
+            <div class="empty-state">
+              <!-- Added class for styling -->
+              <p>No data available for the selected time range.</p>
+            </div>
             {% else %}
+            <div class="chart-grid">
+              <!-- Added grid container -->
+              <div class="chart-container">
+                <!-- Added wrapper for each chart -->
                 {{ chart.power|safe }}
+              </div>
+              <div class="chart-container">
+                <!-- Added wrapper for each chart -->
                 {{ chart.voltage|safe }}
+              </div>
+              <div class="chart-container">
+                <!-- Added wrapper for each chart -->
                 {{ chart.current|safe }}
+              </div>
+              <div class="chart-container">
+                <!-- Added wrapper for each chart -->
                 {{ chart.power_factor|safe }}
+              </div>
+            </div>
             {% endif %}
+          </div>
         </section>
+      </div>
     </main>
-    <footer class="mx-auto flex justify-center align-center p-4 w-full text-secondary bg-primary">
-        <p>&copy; 2024 PowerMonitor</p>
+
+    <footer class="site-footer">
+      <!-- Added class -->
+      <div class="container footer-content">
+        <!-- Added container and content div -->
+        <p>© 2024 PowerMonitor</p>
+      </div>
     </footer>
-</body>
+  </body>
 </html>
