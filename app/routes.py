@@ -106,16 +106,21 @@ def init_routes(app):
         # Default to last 7 days for production reports
         start, end = helpers.parse_timestamps(start, end, 168, True)  # 168 hours = 7 days
 
-        # Simplified query using direct columns without aggregation
+        # Improved query to handle hourly data correctly
         query = f"""
         SELECT
             DATE(timestamp) as date,
-            energyProduced as daily_energy,
+            HOUR(timestamp) as hour,
+            timestamp,
+            energyProduced as hourly_energy,
             avgVoltage as avg_voltage,
-            avgCurrent as avg_current
+            maxVoltage as max_voltage,
+            minVoltage as min_voltage,
+            avgCurrent as avg_current,
+            maxCurrent as max_current
         FROM hourSummarySolar
         WHERE timestamp >= '{start}' AND timestamp <= '{end}'
-        ORDER BY date
+        ORDER BY date, hour
         """
 
         df = helpers.fetch_chart_data(query)
@@ -126,43 +131,39 @@ def init_routes(app):
         if df.empty:
             isEmpty = True
         else:
-            # Daily energy production chart
-            daily_df = df.groupby('date').agg({'daily_energy': 'sum'}).reset_index()
-            fig = px.bar(daily_df, x='date', y='daily_energy', title="Daily Solar Energy Production (kWh)")
+            # Daily energy production chart - sum hourly values to get daily totals
+            daily_df = df.groupby('date').agg({'hourly_energy': 'sum'}).reset_index()
+            fig = px.bar(daily_df, x='date', y='hourly_energy', title="Daily Solar Energy Production (kWh)")
             fig.update_layout(xaxis_title="Date", yaxis_title="Energy (kWh)")
             energy_chart_html = fig.to_html(full_html=False)
 
-            # Average voltage chart
-            voltage_df = df.groupby('date').agg({'avg_voltage': 'mean'}).reset_index()
-            fig = px.line(voltage_df, x='date', y='avg_voltage', title="Average Voltage by Day")
+            # Add hourly energy breakdown for selected days
+            # Show first 3 days with data as an example
+            unique_days = df['date'].unique()[:3]
+            hourly_subset = df[df['date'].isin(unique_days)]
+            fig = px.line(hourly_subset, x='timestamp', y='hourly_energy',
+                         color='date', title="Hourly Energy Production (Selected Days)")
+            fig.update_layout(xaxis_title="Hour", yaxis_title="Energy (kWh)")
+            hourly_energy_html = fig.to_html(full_html=False)
+
+            # Voltage chart with daily min/max range
+            voltage_df = df.groupby('date').agg({
+                'avg_voltage': 'mean',
+                'min_voltage': 'min',
+                'max_voltage': 'max'
+            }).reset_index()
+            fig = px.line(voltage_df, x='date',
+                         y=['min_voltage', 'avg_voltage', 'max_voltage'],
+                         title="Voltage Range by Day",
+                         labels={'value': 'Voltage (V)', 'variable': 'Measurement'})
             fig.update_layout(xaxis_title="Date", yaxis_title="Voltage (V)")
-            avg_voltage_html = fig.to_html(full_html=False)
+            voltage_html = fig.to_html(full_html=False)
 
-            # Average current chart
-            current_df = df.groupby('date').agg({'avg_current': 'mean'}).reset_index()
-            fig = px.line(current_df, x='date', y='avg_current', title="Average Current by Day")
-            fig.update_layout(xaxis_title="Date", yaxis_title="Current (A)")
-            avg_current_html = fig.to_html(full_html=False)
-
-            # Calculate power based on voltage and current (P = V * I)
-            df['calculated_power'] = df['avg_voltage'] * df['avg_current']
-            power_df = df.groupby('date').agg({'calculated_power': 'mean'}).reset_index()
-            fig = px.line(power_df, x='date', y='calculated_power', title="Estimated Average Power by Day")
-            fig.update_layout(xaxis_title="Date", yaxis_title="Power (W)")
-            power_html = fig.to_html(full_html=False)
-
-            # Cumulative energy chart
-            daily_df['cumulative_energy'] = daily_df['daily_energy'].cumsum()
-            fig = px.line(daily_df, x='date', y='cumulative_energy', title="Cumulative Solar Energy Production")
-            fig.update_layout(xaxis_title="Date", yaxis_title="Total Energy (kWh)")
-            cumulative_energy_html = fig.to_html(full_html=False)
-
+            # Update chart dictionary with new visualizations
             chart_html = {
                 "daily_energy": energy_chart_html,
-                "avg_voltage": avg_voltage_html,
-                "avg_current": avg_current_html,
-                "calculated_power": power_html,
-                "cumulative_energy": cumulative_energy_html
+                "hourly_energy": hourly_energy_html,
+                "voltage": voltage_html,
             }
 
         # Render the template with the chart and timestamps

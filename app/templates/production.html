@@ -342,13 +342,8 @@
             {% else %}
             <div class="chart-grid">
               <div class="chart-container">{{ chart.daily_energy|safe }}</div>
-              <div class="chart-container">
-                {{ chart.cumulative_energy|safe }}
-              </div>
-              <div class="chart-container">{{ chart.avg_power|safe }}</div>
-              <div class="chart-container">{{ chart.max_power|safe }}</div>
-              <div class="chart-container">{{ chart.avg_voltage|safe }}</div>
-              <!-- If you have more charts, add more chart-container divs here -->
+              <div class="chart-container">{{ chart.hourly_energy|safe }}</div>
+              <div class="chart-container">{{ chart.voltage|safe }}</div>
             </div>
             {% endif %}
           </div>
