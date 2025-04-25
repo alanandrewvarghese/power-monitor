@@ -15,7 +15,7 @@ def init_routes(app):
 
         start, end = helpers.parse_timestamps(start, end)  # Default last 6 hours
 
-        query = f"SELECT timestamp, power, voltage, power_factor, current FROM measurements WHERE timestamp > '{start}' AND timestamp < '{end}' LIMIT 86400;"
+        query = f"SELECT timestamp, power, voltage, power_factor, current FROM energyConsumption_raw WHERE timestamp > '{start}' AND timestamp < '{end}' LIMIT 86400;"
         df = helpers.fetch_chart_data(query)
 
         chart_html = None
